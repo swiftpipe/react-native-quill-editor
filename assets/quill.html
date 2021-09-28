@@ -1026,6 +1026,19 @@
         if(json.type === 'set') {
           const element = document.getElementsByClassName("ql-editor");
           element[0].innerHTML = json.value;
+          return;
+        }
+        if(json.type === 'blur') {
+          quill.root.blur();
+          return;
+        }
+        if(json.type === 'disable') {
+          quill.root.disable();
+          return;
+        }
+        if(json.type === 'enable') {
+          quill.root.enable();
+          return;
         }
 
 

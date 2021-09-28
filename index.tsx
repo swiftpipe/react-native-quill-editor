@@ -51,6 +51,21 @@ const Quill = React.forwardRef((props: Props, ref) => {
       if (webviewRef.current) {
         webviewRef.current.postMessage(JSON.stringify({ type: 'set', value }));
       }
+    },
+    blur: () => {
+      if (webviewRef.current) {
+        webviewRef.current.postMessage(JSON.stringify({ type: 'blur' }));
+      }
+    },
+    enable: (status) => {
+      if (webviewRef.current) {
+        if (status) {
+          webviewRef.current.postMessage(JSON.stringify({ type: 'enable' }));
+        } else {
+          webviewRef.current.postMessage(JSON.stringify({ type: 'disable' }));
+        }
+        
+      }
     }
   }));
 
