@@ -14,8 +14,7 @@
       background-color:rgba(0, 0, 0, 0);
     }
     #editor {
-      height: calc(100% - 42px);
-      background-color:rgba(0, 0, 0, 0);
+     
     }
     /*!
     * Quill Editor v1.3.6
@@ -27,9 +26,9 @@
       box-sizing: border-box;
       font-family: Helvetica, Arial, sans-serif;
       font-size: 13px;
-      height: 100%;
       margin: 0px;
       position: relative;
+
     }
     .ql-container.ql-disabled .ql-tooltip {
       visibility: hidden;
@@ -960,12 +959,27 @@
       color: #06c;
     }
     .ql-container.ql-snow {
-      border: 1px solid #ccc;
+      /* border: 1px solid #ccc; */
     }
+    /* .ql-toolbar {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      transform: translateY(100%);
+    } */
+  
+    #editor {
+      max-height: 200px;
+      overflow: scroll;
+      display: flex; 
+      flex-direction: column-reverse;
+    }
+
   </style>
+
 </head>
 
-<body>
+<bod>
   <div id="editor"></div>
   <!-- Include the Quill library -->
   <script>
@@ -980,14 +994,69 @@
   <!-- Initialize Quill editor -->
   <script>
     const quill = new Quill('#editor', window.options)
+
+
+
     quill.on('text-change', function(delta, oldDelta, source) {
+
       const html = document.querySelector('#editor').children[0].innerHTML
       const message = {
         type: 'onChange',
         message: html,
+        height: document.querySelector(".ql-editor").offsetHeight,
+        delta,
+        oldDelta
       }
+
+
+
+      
       window.ReactNativeWebView.postMessage(JSON.stringify(message))
     });
+
+    const onMessage = (data) => {
+      try {
+        const json = JSON.parse(data);
+
+        if(json.type === 'clear') {
+          const element = document.getElementsByClassName("ql-editor");
+          element[0].innerHTML = "";
+          return;
+        }
+        if(json.type === 'set') {
+          const element = document.getElementsByClassName("ql-editor");
+          element[0].innerHTML = json.value;
+          return;
+        }
+        if(json.type === 'blur') {
+          quill.root.blur();
+          return;
+        }
+        if(json.type === 'disable') {
+          quill.root.disable();
+          return;
+        }
+        if(json.type === 'enable') {
+          quill.root.enable();
+          return;
+        }
+
+
+      } catch (error) {
+        
+      }
+    }
+
+    if (navigator.appVersion.includes('Android')) {
+      document.addEventListener('message', function (event) {
+        onMessage(event.data);
+      }, false);
+    } else {
+      window.addEventListener('message', function (event) {
+        onMessage(event.data);
+      }, false);
+    }
+
   </script>
 </body>
 </html>
